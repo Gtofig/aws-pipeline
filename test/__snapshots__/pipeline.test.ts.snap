@@ -345,6 +345,7 @@ Object {
           "Type": "S3",
         },
         "Name": "Pipeline",
+        "RestartExecutionOnUpdate": true,
         "RoleArn": Object {
           "Fn::GetAtt": Array [
             "PipelineRoleD68726F7",

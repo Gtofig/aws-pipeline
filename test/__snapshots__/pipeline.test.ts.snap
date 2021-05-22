@@ -309,7 +309,29 @@ Object {
                 "Name": "Pipeline_Source",
                 "OutputArtifacts": Array [
                   Object {
-                    "Name": "SourceOutput",
+                    "Name": "CDKSourceOutput",
+                  },
+                ],
+                "RunOrder": 1,
+              },
+              Object {
+                "ActionTypeId": Object {
+                  "Category": "Source",
+                  "Owner": "ThirdParty",
+                  "Provider": "GitHub",
+                  "Version": "1",
+                },
+                "Configuration": Object {
+                  "Branch": "master",
+                  "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
+                  "Owner": "Gtofig",
+                  "PollForSourceChanges": false,
+                  "Repo": "express-lambda",
+                },
+                "Name": "Service_Source",
+                "OutputArtifacts": Array [
+                  Object {
+                    "Name": "ServiceSourceOutput",
                   },
                 ],
                 "RunOrder": 1,
@@ -333,7 +355,7 @@ Object {
                 },
                 "InputArtifacts": Array [
                   Object {
-                    "Name": "SourceOutput",
+                    "Name": "CDKSourceOutput",
                   },
                 ],
                 "Name": "CDK_Build",
@@ -683,6 +705,27 @@ Object {
         ],
         "RegisterWithThirdParty": true,
         "TargetAction": "Pipeline_Source",
+        "TargetPipeline": Object {
+          "Ref": "PipelineC660917D",
+        },
+        "TargetPipelineVersion": 1,
+      },
+      "Type": "AWS::CodePipeline::Webhook",
+    },
+    "PipelineSourceServiceSourceWebhookResourceF8F7A072": Object {
+      "Properties": Object {
+        "Authentication": "GITHUB_HMAC",
+        "AuthenticationConfiguration": Object {
+          "SecretToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
+        },
+        "Filters": Array [
+          Object {
+            "JsonPath": "$.ref",
+            "MatchEquals": "refs/heads/{Branch}",
+          },
+        ],
+        "RegisterWithThirdParty": true,
+        "TargetAction": "Service_Source",
         "TargetPipeline": Object {
           "Ref": "PipelineC660917D",
         },

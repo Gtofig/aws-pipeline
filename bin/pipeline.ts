@@ -12,7 +12,13 @@ const billingStack = new BillingStack(app, "BillingStack", {
   emailAddress: "gtofig@hotmail.com",
 });
 
-const serviceStackProd = new ServiceStack(app, "ServiceStackProd");
+const serviceStackTest = new ServiceStack(app, "ServiceStackTest", {
+  stageName: "Test",
+});
+const serviceStackProd = new ServiceStack(app, "ServiceStackProd", {
+  stageName: "Prod",
+});
 
+const testStage = pipelineStack.addServiceStage(serviceStackTest, "Test");
 const prodStage = pipelineStack.addServiceStage(serviceStackProd, "Prod");
 pipelineStack.addBillingStackToStage(billingStack, prodStage);

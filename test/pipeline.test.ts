@@ -26,7 +26,9 @@ test("Pipeline Stack", () => {
 test("Adding service stage", () => {
   // GIVEN
   const app = new App();
-  const serviceStack = new ServiceStack(app, "ServiceStack");
+  const serviceStack = new ServiceStack(app, "ServiceStack", {
+    stageName: "Test",
+  });
   const pipelineStack = new PipelineStack(app, "PipelineStack");
 
   // WHEN
@@ -47,7 +49,9 @@ test("Adding service stage", () => {
 test("Adding billing stack to a stage", () => {
   // GIVEN
   const app = new App();
-  const serviceStack = new ServiceStack(app, "ServiceStack");
+  const serviceStack = new ServiceStack(app, "ServiceStack", {
+    stageName: "Test",
+  });
   const pipelineStack = new PipelineStack(app, "PipelineStack");
   const billingStack = new BillingStack(app, "BillingStack", {
     budgetAmount: 5,

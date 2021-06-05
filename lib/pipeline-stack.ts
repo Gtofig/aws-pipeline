@@ -1,12 +1,14 @@
 import * as cdk from "@aws-cdk/core";
+import { SecretValue } from "@aws-cdk/core";
 import { Artifact, IStage, Pipeline } from "@aws-cdk/aws-codepipeline";
 import {
   CloudFormationCreateUpdateStackAction,
   CodeBuildAction,
+  CodeBuildActionType,
   GitHubSourceAction,
 } from "@aws-cdk/aws-codepipeline-actions";
-import { SecretValue } from "@aws-cdk/core";
 import {
+  BuildEnvironmentVariableType,
   BuildSpec,
   LinuxBuildImage,
   PipelineProject,
@@ -18,6 +20,7 @@ export class PipelineStack extends cdk.Stack {
   private readonly pipeline: Pipeline;
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
+  private readonly serviceSourceOutput: Artifact;
 
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -29,7 +32,7 @@ export class PipelineStack extends cdk.Stack {
     });
 
     const cdkSourceOutput = new Artifact("CDKSourceOutput");
-    const serviceSourceOutput = new Artifact("ServiceSourceOutput");
+    this.serviceSourceOutput = new Artifact("ServiceSourceOutput");
 
     this.pipeline.addStage({
       stageName: "Source",
@@ -48,7 +51,7 @@ export class PipelineStack extends cdk.Stack {
           branch: "master",
           actionName: "Service_Source",
           oauthToken: SecretValue.secretsManager("github-token"),
-          output: serviceSourceOutput,
+          output: this.serviceSourceOutput,
         }),
       ],
     });
@@ -74,7 +77,7 @@ export class PipelineStack extends cdk.Stack {
         }),
         new CodeBuildAction({
           actionName: "Service_Build",
-          input: serviceSourceOutput,
+          input: this.serviceSourceOutput,
           outputs: [this.serviceBuildOutput],
           project: new PipelineProject(this, "ServiceBuildProject", {
             environment: {
@@ -137,6 +140,34 @@ export class PipelineStack extends cdk.Stack {
           `${billingStack.stackName}.template.json`
         ),
         adminPermissions: true,
+      })
+    );
+  }
+
+  public addServiceIntegrationTestToStage(
+    stage: IStage,
+    serviceEndpoint: string
+  ) {
+    stage.addAction(
+      new CodeBuildAction({
+        actionName: "Integration_Tests",
+        input: this.serviceSourceOutput,
+        project: new PipelineProject(this, "ServiceIntegrationTestsProject", {
+          environment: {
+            buildImage: LinuxBuildImage.STANDARD_5_0,
+          },
+          buildSpec: BuildSpec.fromSourceFilename(
+            "build-specs/integ-test-build-spec.yml"
+          ),
+        }),
+        environmentVariables: {
+          SERVICE_ENDPOINT: {
+            value: serviceEndpoint,
+            type: BuildEnvironmentVariableType.PLAINTEXT,
+          },
+        },
+        type: CodeBuildActionType.TEST,
+        runOrder: 2,
       })
     );
   }

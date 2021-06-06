@@ -511,6 +511,22 @@ Object {
       },
       "Type": "AWS::CodePipeline::Pipeline",
     },
+    "PipelineNotificationsTopic827A419F": Object {
+      "Properties": Object {
+        "TopicName": "PipelineNotifications",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "PipelineNotificationsTopicGtofighotmailcomE2DA8F98": Object {
+      "Properties": Object {
+        "Endpoint": "Gtofig@hotmail.com",
+        "Protocol": "email",
+        "TopicArn": Object {
+          "Ref": "PipelineNotificationsTopic827A419F",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
     "PipelinePipelineUpdateCodePipelineActionRoleDefaultPolicy024C1709": Object {
       "Properties": Object {
         "PolicyDocument": Object {

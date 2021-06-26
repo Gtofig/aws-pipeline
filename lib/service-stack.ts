@@ -20,6 +20,8 @@ import {
 } from "@aws-cdk/aws-codedeploy";
 import { Statistic, TreatMissingData } from "@aws-cdk/aws-cloudwatch";
 import { ServiceHealthCanary } from "./constructs/service-health-canary";
+import { Topic } from "@aws-cdk/aws-sns";
+import { EmailSubscription } from "@aws-cdk/aws-sns-subscriptions";
 
 interface ServiceStackProps extends StackProps {
   stageName: string;
@@ -77,9 +79,16 @@ export class ServiceStack extends Stack {
         ],
       });
 
+      const alarmTopic = new Topic(this, "ServiceAlarmTopic", {
+        topicName: "ServiceAlarmTopic",
+      });
+
+      alarmTopic.addSubscription(new EmailSubscription("Gtofig@hotmail.com"));
+
       new ServiceHealthCanary(this, "ServiceCanary", {
         apiEndpoint: httpApi.apiEndpoint,
         canaryName: "service-canary",
+        alarmTopic: alarmTopic,
       });
     }
 

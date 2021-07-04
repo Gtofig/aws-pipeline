@@ -16,6 +16,11 @@ const euWest1Env: Environment = {
   region: "eu-west-1",
 };
 
+const account2Env: Environment = {
+  account: "652794127263",
+  region: "us-east-1",
+};
+
 const app = new cdk.App();
 const pipelineStack = new PipelineStack(app, "PipelineStack", {
   env: usEast1Env,
@@ -30,6 +35,12 @@ const serviceStackTest = new ServiceStack(app, "ServiceStackTest", {
   env: usEast1Env,
   stageName: "Test",
 });
+
+const serviceStackTest2 = new ServiceStack(app, "ServiceStackTest2", {
+  env: account2Env,
+  stageName: "Test",
+});
+
 const serviceStackProd = new ServiceStack(app, "ServiceStackProd", {
   env: usEast1Env,
   stageName: "Prod",
@@ -41,6 +52,7 @@ const serviceStackProdBackup = new ServiceStack(app, "ServiceStackProdBackup", {
 });
 
 const testStage = pipelineStack.addServiceStage(serviceStackTest, "Test");
+pipelineStack.addServiceStage(serviceStackTest2, "CrossAccountTest");
 const prodStage = pipelineStack.addServiceStage(serviceStackProd, "Prod");
 pipelineStack.addServiceStage(serviceStackProdBackup, "ProdBackup");
 

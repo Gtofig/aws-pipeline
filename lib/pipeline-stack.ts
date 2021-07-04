@@ -44,7 +44,7 @@ export class PipelineStack extends cdk.Stack {
 
     this.pipeline = new Pipeline(this, "Pipeline", {
       pipelineName: "Pipeline",
-      crossAccountKeys: false,
+      crossAccountKeys: true,
       restartExecutionOnUpdate: true,
     });
 

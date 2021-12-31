@@ -7,17 +7,17 @@ import { ServiceStack } from "../lib/service-stack";
 import { Environment } from "@aws-cdk/core";
 
 const usEast1Env: Environment = {
-  account: "923477207877",
+  account: "107788087125",
   region: "us-east-1",
 };
 
 const euWest1Env: Environment = {
-  account: "923477207877",
+  account: "107788087125",
   region: "eu-west-1",
 };
 
 const account2Env: Environment = {
-  account: "652794127263",
+  account: "862494862178",
   region: "us-east-1",
 };
 

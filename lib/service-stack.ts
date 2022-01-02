@@ -1,27 +1,22 @@
-import {
-  CfnOutput,
-  Construct,
-  Duration,
-  Stack,
-  StackProps,
-} from "@aws-cdk/core";
+import { CfnOutput, Duration, Stack, StackProps } from "aws-cdk-lib";
 import {
   Alias,
   CfnParametersCode,
   Code,
   Function,
   Runtime,
-} from "@aws-cdk/aws-lambda";
-import { HttpApi } from "@aws-cdk/aws-apigatewayv2";
-import { LambdaProxyIntegration } from "@aws-cdk/aws-apigatewayv2-integrations";
+} from "aws-cdk-lib/aws-lambda";
+import { HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import {
   LambdaDeploymentConfig,
   LambdaDeploymentGroup,
-} from "@aws-cdk/aws-codedeploy";
-import { Statistic, TreatMissingData } from "@aws-cdk/aws-cloudwatch";
+} from "aws-cdk-lib/aws-codedeploy";
+import { Statistic, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
 import { ServiceHealthCanary } from "./constructs/service-health-canary";
-import { Topic } from "@aws-cdk/aws-sns";
-import { EmailSubscription } from "@aws-cdk/aws-sns-subscriptions";
+import { Topic } from "aws-cdk-lib/aws-sns";
+import { EmailSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
+import { Construct } from "constructs";
 
 interface ServiceStackProps extends StackProps {
   stageName: string;
@@ -30,6 +25,7 @@ interface ServiceStackProps extends StackProps {
 export class ServiceStack extends Stack {
   public readonly serviceCode: CfnParametersCode;
   public readonly serviceEndpointOutput: CfnOutput;
+
   constructor(scope: Construct, id: string, props: ServiceStackProps) {
     super(scope, id, props);
 
@@ -49,9 +45,7 @@ export class ServiceStack extends Stack {
     });
 
     const httpApi = new HttpApi(this, "ServiceAPI", {
-      defaultIntegration: new LambdaProxyIntegration({
-        handler: alias,
-      }),
+      defaultIntegration: new HttpLambdaIntegration("LambdaIntegration", alias),
       apiName: `MyService${props.stageName}`,
     });
 

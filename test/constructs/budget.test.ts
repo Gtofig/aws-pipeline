@@ -1,6 +1,6 @@
-import { App, Stack } from "@aws-cdk/core";
+import { App, Stack } from "aws-cdk-lib";
 import { Budget } from "../../lib/constructs/budget";
-import { expect as expectCDK, haveResourceLike } from "@aws-cdk/assert";
+import { Match, Template } from "aws-cdk-lib/assertions";
 
 test("Budget construct", () => {
   const app = new App();
@@ -10,22 +10,21 @@ test("Budget construct", () => {
     emailAddress: "test@example.com",
   });
 
-  expectCDK(stack).to(
-    haveResourceLike("AWS::Budgets::Budget", {
-      Budget: {
-        BudgetLimit: {
-          Amount: 1,
-        },
+  Template.fromStack(stack).hasResourceProperties("AWS::Budgets::Budget", {
+    Budget: {
+      BudgetLimit: {
+        Amount: 1,
       },
-      NotificationsWithSubscribers: [
-        {
-          Subscribers: [
-            {
-              Address: "test@example.com",
-            },
-          ],
-        },
-      ],
-    })
-  );
+    },
+    NotificationsWithSubscribers: [
+      Match.objectLike({
+        Subscribers: [
+          {
+            Address: "test@example.com",
+            SubscriptionType: "EMAIL",
+          },
+        ],
+      }),
+    ],
+  });
 });

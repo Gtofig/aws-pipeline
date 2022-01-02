@@ -1,33 +1,33 @@
-import * as cdk from "@aws-cdk/core";
-import { SecretValue } from "@aws-cdk/core";
-import { Artifact, IStage, Pipeline } from "@aws-cdk/aws-codepipeline";
+import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
+import { Artifact, IStage, Pipeline } from "aws-cdk-lib/aws-codepipeline";
 import {
   CloudFormationCreateUpdateStackAction,
   CodeBuildAction,
   CodeBuildActionType,
   GitHubSourceAction,
-} from "@aws-cdk/aws-codepipeline-actions";
+} from "aws-cdk-lib/aws-codepipeline-actions";
 import {
   BuildEnvironmentVariableType,
   BuildSpec,
   LinuxBuildImage,
   PipelineProject,
-} from "@aws-cdk/aws-codebuild";
+} from "aws-cdk-lib/aws-codebuild";
 import { ServiceStack } from "./service-stack";
 import { BillingStack } from "./billing-stack";
-import { SnsTopic } from "@aws-cdk/aws-events-targets";
-import { Topic } from "@aws-cdk/aws-sns";
-import { EventField, RuleTargetInput } from "@aws-cdk/aws-events";
-import { EmailSubscription } from "@aws-cdk/aws-sns-subscriptions";
+import { SnsTopic } from "aws-cdk-lib/aws-events-targets";
+import { Topic } from "aws-cdk-lib/aws-sns";
+import { EventField, RuleTargetInput } from "aws-cdk-lib/aws-events";
+import { EmailSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
+import { Construct } from "constructs";
 
-export class PipelineStack extends cdk.Stack {
+export class PipelineStack extends Stack {
   private readonly pipeline: Pipeline;
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
   private readonly serviceSourceOutput: Artifact;
   private readonly pipelineNotificationsTopic: Topic;
 
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.pipelineNotificationsTopic = new Topic(

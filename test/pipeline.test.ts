@@ -1,18 +1,9 @@
-import {
-  expect as expectCDK,
-  matchTemplate,
-  MatchStyle,
-  SynthUtils,
-  haveResourceLike,
-  arrayWith,
-  objectLike,
-} from "@aws-cdk/assert";
-import * as cdk from "@aws-cdk/core";
 import * as Pipeline from "../lib/pipeline-stack";
-import { App, Environment } from "@aws-cdk/core";
+import { App, Environment } from "aws-cdk-lib";
 import { ServiceStack } from "../lib/service-stack";
 import { PipelineStack } from "../lib/pipeline-stack";
 import { BillingStack } from "../lib/billing-stack";
+import { Match, Template } from "aws-cdk-lib/assertions";
 
 const testEnv: Environment = {
   region: "us-east-1",
@@ -20,14 +11,14 @@ const testEnv: Environment = {
 };
 
 test("Pipeline Stack", () => {
-  const app = new cdk.App();
+  const app = new App();
   // WHEN
   const stack = new Pipeline.PipelineStack(app, "MyTestStack", {
     env: testEnv,
   });
   // THEN
 
-  expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
+  expect(Template.fromStack(stack).toJSON()).toMatchSnapshot();
 });
 
 test("Adding service stage", () => {
@@ -45,14 +36,15 @@ test("Adding service stage", () => {
   pipelineStack.addServiceStage(serviceStack, "Test");
 
   // THEN
-  expectCDK(pipelineStack).to(
-    haveResourceLike("AWS::CodePipeline::Pipeline", {
-      Stages: arrayWith(
-        objectLike({
+  Template.fromStack(pipelineStack).hasResourceProperties(
+    "AWS::CodePipeline::Pipeline",
+    {
+      Stages: Match.arrayWith([
+        Match.objectLike({
           Name: "Test",
-        })
-      ),
-    })
+        }),
+      ]),
+    }
   );
 });
 
@@ -77,17 +69,18 @@ test("Adding billing stack to a stage", () => {
   pipelineStack.addBillingStackToStage(billingStack, testStage);
 
   // THEN
-  expectCDK(pipelineStack).to(
-    haveResourceLike("AWS::CodePipeline::Pipeline", {
-      Stages: arrayWith(
-        objectLike({
-          Actions: arrayWith(
-            objectLike({
+  Template.fromStack(pipelineStack).hasResourceProperties(
+    "AWS::CodePipeline::Pipeline",
+    {
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Actions: Match.arrayWith([
+            Match.objectLike({
               Name: "Billing_Update",
-            })
-          ),
-        })
-      ),
-    })
+            }),
+          ]),
+        }),
+      ]),
+    }
   );
 });

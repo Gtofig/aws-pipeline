@@ -1,7 +1,7 @@
-import { App, Stack } from "@aws-cdk/core";
+import { App, Stack } from "aws-cdk-lib";
 import { ServiceHealthCanary } from "../../lib/constructs/service-health-canary";
-import { expect, haveResourceLike } from "@aws-cdk/assert";
-import { Topic } from "@aws-cdk/aws-sns";
+import { Topic } from "aws-cdk-lib/aws-sns";
+import { Template } from "aws-cdk-lib/assertions";
 
 test("ServiceHealthCanary", () => {
   const app = new App();
@@ -13,13 +13,11 @@ test("ServiceHealthCanary", () => {
     alarmTopic: new Topic(stack, "TestAlarmTopic"),
   });
 
-  expect(stack).to(
-    haveResourceLike("AWS::Synthetics::Canary", {
-      RunConfig: {
-        EnvironmentVariables: {
-          API_ENDPOINT: "api.example.com",
-        },
+  Template.fromStack(stack).hasResourceProperties("AWS::Synthetics::Canary", {
+    RunConfig: {
+      EnvironmentVariables: {
+        API_ENDPOINT: "api.example.com",
       },
-    })
-  );
+    },
+  });
 });

@@ -1,10 +1,17 @@
-import { Construct, Duration } from "@aws-cdk/core";
-import { Canary, Code, Runtime, Schedule, Test } from "@aws-cdk/aws-synthetics";
+import { Construct } from "constructs";
+import {
+  Canary,
+  Code,
+  Runtime,
+  Schedule,
+  Test,
+} from "@aws-cdk/aws-synthetics-alpha";
 import * as fs from "fs";
 import * as path from "path";
-import { Statistic, TreatMissingData } from "@aws-cdk/aws-cloudwatch";
-import { SnsAction } from "@aws-cdk/aws-cloudwatch-actions";
-import { Topic } from "@aws-cdk/aws-sns";
+import { Statistic, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
+import { SnsAction } from "aws-cdk-lib/aws-cloudwatch-actions";
+import { Topic } from "aws-cdk-lib/aws-sns";
+import { Duration } from "aws-cdk-lib";
 
 interface ServiceHealthCanaryProps {
   apiEndpoint: string;

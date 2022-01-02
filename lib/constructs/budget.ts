@@ -1,5 +1,5 @@
-import { Construct } from "@aws-cdk/core";
-import { CfnBudget } from "@aws-cdk/aws-budgets";
+import { Construct } from "constructs";
+import { CfnBudget } from "aws-cdk-lib/aws-budgets";
 
 interface BudgetProps {
   budgetAmount: number;

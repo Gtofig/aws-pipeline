@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import "source-map-support/register";
-import * as cdk from "@aws-cdk/core";
 import { PipelineStack } from "../lib/pipeline-stack";
 import { BillingStack } from "../lib/billing-stack";
 import { ServiceStack } from "../lib/service-stack";
-import { Environment } from "@aws-cdk/core";
+import { App, Environment } from "aws-cdk-lib";
 
 const usEast1Env: Environment = {
   account: "107788087125",
@@ -21,7 +20,7 @@ const account2Env: Environment = {
   region: "us-east-1",
 };
 
-const app = new cdk.App();
+const app = new App();
 const pipelineStack = new PipelineStack(app, "PipelineStack", {
   env: usEast1Env,
 });
